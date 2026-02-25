@@ -1,4 +1,15 @@
 # local datasets
 data/
+
+# virtual environments
 .venv/
 venv/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# pyenv
+.python-version

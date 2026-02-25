@@ -1,4 +1,20 @@
 
+## WordCloud Spacy
+
+install python -m spacy download de_core_news_sm
+
+## Data
+
+Datasets are not stored in this repo.
+
+Place your data under:
+
+data/
+
+or set:
+
+DATA_DIR=/path/to/data
+
 ## Environment
 
 ### **`macOS`** type the following commands :

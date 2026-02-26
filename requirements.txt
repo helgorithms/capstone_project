@@ -16,6 +16,7 @@ langchain-huggingface==1.2.0
 langchain-openai==1.1.10
 langchain-text-splitters==0.3.11
 langchainhub==0.1.21
+langchain-classic==1.0.1
 langgraph==1.0.9
 langgraph-checkpoint==4.0.0
 langgraph-prebuilt==1.0.8

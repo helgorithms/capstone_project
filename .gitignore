@@ -1,9 +1,14 @@
 # local datasets
 data/
+vector_databases/
 
 # virtual environments
 .venv/
 venv/
+.env/
+.env
+env/
+
 
 # macOS
 .DS_Store

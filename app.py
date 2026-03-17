@@ -9,6 +9,7 @@ import json
 import time
 import streamlit as st
 import pandas as pd
+import base64
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -432,19 +433,6 @@ def run_query(user_input: str, vectorstore, known_speakers: set, llm) -> dict:
 
 
 # ── UI ───────────────────────────────────────────────────────────
-def render_header():
-    st.title("ChatBundestag 🏛️")
-    st.markdown(
-        "Argumentationsanalyse für Bundestagsdebatten der 19. Legislaturperiode (2017–2021)."
-    )
-    with st.expander("ℹ️ Beispielabfragen"):
-        st.markdown("""
-- **Partei:** *Wie stehen die Grünen zur Energiewende?*
-- **Person:** *Welche Position vertritt Gregor Gysi zum Atomwaffenverbotsvertrag?*
-- **Regierung:** *Welche Position vertritt die Bundesregierung zur europäischen Integration?*
-        """)
-
-
 def render_result(data: dict):
     """Render a structured argument result."""
     speaker = data.get("speaker") or "unbekannt"
@@ -471,7 +459,7 @@ def render_result(data: dict):
 
     # Claim
     if data.get("claim"):
-        st.markdown(f"**📌 Claim**")
+        st.markdown(f"**📌 Standpunkt**")
         st.markdown(f"> {data['claim']}")
 
     # Arguments
@@ -495,8 +483,30 @@ def render_result(data: dict):
             st.markdown(f"- {a}")
 
 
+def set_background(image_path):
+    with open(image_path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+    st.markdown(f"""
+    <style>
+    [data-testid="stApp"] {{
+        background-image: url("data:image/png;base64,{data}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }}
+    [data-testid="stApp"] > div {{
+        background-color: rgba(255, 255, 255, 0.85);
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+# ── MAIN ───────────────────────────────────────────────────────────
 def main():
-    render_header()
+    set_background("images/reichstagsgebaeude_wiese.png")
+    st.title("ChatBundestag 🏛️")
+    st.markdown(
+        "Argumentationsanalyse für Bundestagsdebatten der 19. Legislaturperiode (2017–2021)."
+    )
 
     # Load resources
     with st.spinner("Lade Modelle und Daten..."):
@@ -505,9 +515,46 @@ def main():
         known_speakers = load_known_speakers()
         llm = load_llm()
 
+    # Instructions 
+    # Instructions (after known_speakers is loaded)
+    with st.expander("🔎 Anleitung & Beispiele"):
+        st.markdown(
+"ChatBundestag analysiert Argumentationsstrukturen in Bundestagsdebatten der 19. Legislaturperiode (2017–2021).\n\n"
+"**Was kann abgefragt werden?**\n"
+"- **Parteien:** CDU/CSU, SPD (Koalition) · Grüne, Linke, AfD, FDP (Opposition)\n"
+"- **Personen:** Alle Mitglieder des Deutschen Bundestages während der 19. Legislaturperiode (s. Redner/innenauswahl)\n"
+"- **Themen:** Alle Themen, die debattiert wurden (s. Themenbeispiele)\n\n"
+"**Beispielabfragen:**\n"
+"- *Wie steht die FDP zur Mietpreisbremse?*\n"
+"- *Welche Position vertritt Angela Merkel zur Europäischen Integration?*\n"
+"- *Wie argumentiert die Linke zum Mindestlohn?*\n"
+"- *Wie steht die AfD zur Energiewende?*\n\n"
+"**Output:**\n"
+"- Zentrale Position (Standpunkt)\n"
+"- Faktische Begründung (Grounds)\n"
+"- Entkräftung von Gegenargumenten (Rebuttal)\n"
+"- Angriff der Gegenposition (Attack)"
+        )
+
+        st.selectbox(
+            "📋 Themenbeispiele",
+            ["(Thema auswählen)"] + [
+                "Mietpreisbremse", "Energiewende", "Klimaschutzgesetz", "Mindestlohn",
+                "Europäische Integration", "Corona-Steuerhilfsgesetz", "Atomwaffenverbotsvertrag", "Sicherheitspolitik",
+                "digitale Bildung", "Grundsteuerreform", "Bürokratieabbau",
+            ],
+            key="topic_browse",
+        )
+
+        st.selectbox(
+            f"👥 Redner/innen ({len(known_speakers)})",
+            ["(Person auswählen)"] + sorted(known_speakers),
+            key="speaker_browse",
+        )
+
     # Query input
     user_input = st.text_input(
-        "Deine Frage:",
+        "**Deine Frage:**",
         placeholder="z.B. Wie steht die FDP zur Mietpreisbremse?",
     )
 

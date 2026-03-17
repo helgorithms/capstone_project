@@ -541,7 +541,7 @@ def main():
             ["(Thema auswählen)"] + [
                 "Mietpreisbremse", "Energiewende", "Klimaschutzgesetz", "Mindestlohn",
                 "Europäische Integration", "Corona-Steuerhilfsgesetz", "Atomwaffenverbotsvertrag", "Sicherheitspolitik",
-                "digitale Bildung", "Grundsteuerreform", "Bürokratieabbau",
+                "digitale Bildung", "Steuerpolitik", "Bürokratieabbau",
             ],
             key="topic_browse",
         )

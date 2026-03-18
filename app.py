@@ -525,7 +525,7 @@ def main():
 "- **Personen:** Alle Mitglieder des Deutschen Bundestages während der 19. Legislaturperiode (s. Redner/innenauswahl)\n"
 "- **Themen:** Alle Themen, die debattiert wurden (s. Themenbeispiele)\n\n"
 "**Beispielabfragen:**\n"
-"- *Wie steht die FDP zum Bürokratieabbau? *\n"
+"- *Wie steht die FDP zum Bürokratieabbau?*\n"
 "- *Welche Position vertritt Angela Merkel zur Europäischen Integration?*\n"
 "- *Wie argumentiert die Linke zum Mindestlohn?*\n"
 "- *Wie stehen die Grünen zur Energiewende?*\n\n"

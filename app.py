@@ -538,7 +538,7 @@ def main():
 "**Beispielabfragen:**\n"
 "- *Wie steht die FDP zum Bürokratieabbau?*\n"
 "- *Welche Position vertritt Angela Merkel zur Europäischen Integration?*\n"
-"- *Wie argumentiert die Linke zum Atomwaffenverbotsvertrag?*\n"
+"- *Wie steht die Linke zum Atomwaffenverbotsvertrag?*\n"
 "- *Wie stehen die Grünen zur Energiewende?*\n\n"
 "**Output:**\n"
 "- Zentrale Position (Standpunkt)\n"

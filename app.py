@@ -433,6 +433,16 @@ def run_query(user_input: str, vectorstore, known_speakers: set, llm) -> dict:
 
 
 # ── UI ───────────────────────────────────────────────────────────
+def render_logo(image_path, width=300):
+    with open(image_path, "rb") as f:
+        data = base64.b64encode(f.read()).decode()
+    st.markdown(
+        f'<div style="display:flex;justify-content:center;padding:0;">'
+        f'<img src="data:image/png;base64,{data}" width="{width}">'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
 def render_result(data: dict):
     """Render a structured argument result."""
     speaker = data.get("speaker") or "unbekannt"
@@ -503,7 +513,8 @@ def set_background(image_path):
 # ── MAIN ───────────────────────────────────────────────────────────
 def main():
     set_background("images/reichstagsgebaeude_wiese.png")
-    st.title("ChatBundestag 🏛️")
+    #st.title("ChatBundestag 🏛️")
+    render_logo("images/chatbundestag_logo.png", width=400)
     st.markdown(
         "Argumentationsanalyse für Bundestagsdebatten der 19. Legislaturperiode (2017–2021)."
     )
@@ -527,7 +538,7 @@ def main():
 "**Beispielabfragen:**\n"
 "- *Wie steht die FDP zum Bürokratieabbau?*\n"
 "- *Welche Position vertritt Angela Merkel zur Europäischen Integration?*\n"
-"- *Wie argumentiert die Linke zum Mindestlohn?*\n"
+"- *Wie argumentiert die Linke zum Atomwaffenverbotsvertrag?*\n"
 "- *Wie stehen die Grünen zur Energiewende?*\n\n"
 "**Output:**\n"
 "- Zentrale Position (Standpunkt)\n"

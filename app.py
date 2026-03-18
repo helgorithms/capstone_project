@@ -525,10 +525,10 @@ def main():
 "- **Personen:** Alle Mitglieder des Deutschen Bundestages während der 19. Legislaturperiode (s. Redner/innenauswahl)\n"
 "- **Themen:** Alle Themen, die debattiert wurden (s. Themenbeispiele)\n\n"
 "**Beispielabfragen:**\n"
-"- *Wie steht die FDP zur Mietpreisbremse?*\n"
+"- *Wie steht die FDP zum Bürokratieabbau? *\n"
 "- *Welche Position vertritt Angela Merkel zur Europäischen Integration?*\n"
 "- *Wie argumentiert die Linke zum Mindestlohn?*\n"
-"- *Wie steht die AfD zur Energiewende?*\n\n"
+"- *Wie stehen die Grünen zur Energiewende?*\n\n"
 "**Output:**\n"
 "- Zentrale Position (Standpunkt)\n"
 "- Faktische Begründung (Grounds)\n"
@@ -555,7 +555,7 @@ def main():
     # Query input
     user_input = st.text_input(
         "**Deine Frage:**",
-        placeholder="z.B. Wie steht die FDP zur Mietpreisbremse?",
+        placeholder="z.B. Wie steht die Linke zum Atomwaffenverbotsvertrag?",
     )
 
     if user_input:

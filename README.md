@@ -142,7 +142,7 @@ The interesting parts of this project are the choices, not the pipeline.
 | **Structured output** | pydantic schema, not free text | A prose answer about politics is unfalsifiable. A typed object with mandatory attribution can be checked against the protocol — which is the entire point of the project. |
 | **Filter before search** | Rule-based parser, not LLM-based | Party and speaker names are a closed, known vocabulary. A regex map is deterministic, free and instant; an LLM call here would add latency and a second failure mode. |
 | **Adaptive `fetch_k`** | Scaled by filter narrowness | Narrower filters need a larger candidate pool to survive post-filtering (see [Limitations](#known-limitations)). |
-| **LLM** | Groq `llama-3.1-8b-instant` | Fast enough for interactive use, cheap enough to leave running, and adequate for extraction given a strongly constrained few-shot prompt. |
+| **LLM** | Groq, model set by config | Fast enough for interactive use and cheap enough to leave running. The model is configuration rather than a constant: Groq retires hosted models on a rolling basis, and the original choice (`llama-3.1-8b-instant`) was shut down on 2026-08-16. Default is now `openai/gpt-oss-20b`; override with `GROQ_MODEL`. |
 | **Argument model** | Toulmin-derived | `claim` / `grounds` / `rebuttal` / `attack` maps cleanly onto how parliamentary rhetoric is actually structured — a position, its support, a pre-empted objection, and an attack on the other side. |
 
 ---
@@ -281,6 +281,7 @@ Create a `.env` file in the project root:
 
 ```
 GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-20b     # optional; see console.groq.com/docs/models
 ```
 
 Place the dataset and prebuilt index:

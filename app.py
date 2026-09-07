@@ -20,6 +20,7 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.embeddings import Embeddings
 from langchain_groq import ChatGroq
+from groq import NotFoundError
 import sys
 from pathlib import Path
 
@@ -57,6 +58,12 @@ st.set_page_config(
 # ── Constants ────────────────────────────────────────────────────
 VECTOR_DB_PATH = "vector_databases/vector_db_debates_lp19"
 DATA_PATH = "data/debates_lp19.csv"
+
+# Groq retires hosted models on a rolling basis, so the model is configuration,
+# not a constant. llama-3.1-8b-instant (the original choice) was shut down on
+# 2026-08-16 and is now Enterprise-only; Groq's recommended replacement is
+# openai/gpt-oss-20b. Override with GROQ_MODEL in .env or Streamlit secrets.
+DEFAULT_GROQ_MODEL = "openai/gpt-oss-20b"
 
 GOV_STATUS_MAP = {1: "Regierungspartei", 0: "Opposition"}
 PARTY_DISPLAY_MAP = {"Cabinet": "Bundesregierung"}
@@ -128,8 +135,12 @@ def load_llm():
     if not api_key:
         st.error("GROQ_API_KEY nicht gefunden. Bitte in .env oder Streamlit Secrets hinterlegen.")
         st.stop()
+    try:
+        model = st.secrets.get("GROQ_MODEL") or os.environ.get("GROQ_MODEL") or DEFAULT_GROQ_MODEL
+    except (FileNotFoundError, KeyError):
+        model = os.environ.get("GROQ_MODEL", DEFAULT_GROQ_MODEL)
     return ChatGroq(
-        model="llama-3.1-8b-instant",
+        model=model,
         temperature=0,
         max_tokens=4096,
         timeout=None,
@@ -454,7 +465,17 @@ def run_query(user_input: str, vectorstore, known_speakers: set, llm) -> dict:
     context = format_context_with_metadata(docs)
 
     prompt_input = {"context": context, "question": user_input}
-    msg = llm.invoke(prompt.format(**prompt_input))
+    try:
+        msg = llm.invoke(prompt.format(**prompt_input))
+    except NotFoundError:
+        model = getattr(llm, "model_name", None) or getattr(llm, "model", "?")
+        st.error(
+            f"Das Modell '{model}' ist bei Groq nicht (mehr) verfügbar. "
+            "Groq stellt gehostete Modelle regelmäßig ab. Bitte GROQ_MODEL in "
+            "den Streamlit Secrets bzw. in .env auf ein aktuelles Modell setzen "
+            "— siehe https://console.groq.com/docs/models"
+        )
+        st.stop()
     result = parse_llm_output(msg.content)
     result["_filters"] = filters
     result["_num_docs"] = len(docs)

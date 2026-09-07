@@ -1,0 +1,416 @@
+{
+  "Andreas Pinkwart": {
+    "party": "FDP",
+    "party_detail": "FDP",
+    "level": "state",
+    "source": "manual"
+  },
+  "Andreas Scheuer": {
+    "party": "CDU/CSU",
+    "party_detail": "CSU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Anette Kramme": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Angela Merkel": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Anja Karliczek": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Annegret Kramp-Karrenbauer": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Annette Widmann-Mauz": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Barbara Hendricks": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Benjamin-Immanuel Hoff": {
+    "party": "LINKE",
+    "party_detail": "LINKE",
+    "level": "state",
+    "source": "manual"
+  },
+  "Bettina Hagedorn": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Boris Pistorius": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "state",
+    "source": "manual"
+  },
+  "Brigitte Zypries": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Caren Marks": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Christian Hirte": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Christian Lange": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Christian Schmidt": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Christine Lambrecht": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Dorothee Bär": {
+    "party": "CDU/CSU",
+    "party_detail": "CSU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Elisabeth Winkelmeier-Becker": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Enak Ferlemann": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Florian Pronold": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Franziska Giffey": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Georg Maier": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "state",
+    "source": "manual"
+  },
+  "Gerd Müller": {
+    "party": "CDU/CSU",
+    "party_detail": "CSU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Günter Krings": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Hans-Joachim Fuchtel": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Heiko Maas": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Helge Braun": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Hendrik Hoppenstedt": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Horst Seehofer": {
+    "party": "CDU/CSU",
+    "party_detail": "CSU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Hubertus Heil": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Jens Spahn": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Joachim Stamp": {
+    "party": "FDP",
+    "party_detail": "FDP",
+    "level": "state",
+    "source": "manual"
+  },
+  "Julia Klöckner": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Karl-Josef Laumann": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "state",
+    "source": "manual"
+  },
+  "Katarina Barley": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Kerstin Griese": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Marco Wanderwitz": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Maria Böhmer": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Maria Flachsbarth": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Michael Meister": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Michael Roth": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Michael Stübgen": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Michelle Müntefering": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Monika Grütters": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Niels Annen": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Norbert Barthle": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Olaf Scholz": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Ole Schröder": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Oliver Wittke": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Peter Altmaier": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Peter Tauber": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Ralf Brauksiepe": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Rita Hagl-Kehl": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Rita Schwarzelühr-Sutter": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Sabine Weiss": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Sarah Ryglewski": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Sigmar Gabriel": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Steffen Bilger": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Stephan Mayer": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Svenja Schulze": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Thomas Bareiß": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Thomas Gebhart": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Thomas Maizière": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Thomas Rachel": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  },
+  "Thomas Silberhorn": {
+    "party": "CDU/CSU",
+    "party_detail": "CSU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Till Backhaus": {
+    "party": "SPD",
+    "party_detail": "SPD",
+    "level": "state",
+    "source": "manual"
+  },
+  "Ursula Leyen": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU",
+    "level": "federal",
+    "source": "manual"
+  },
+  "Volkmar Vogel": {
+    "party": "CDU/CSU",
+    "party_detail": "CDU/CSU",
+    "level": "federal",
+    "source": "corpus"
+  }
+}

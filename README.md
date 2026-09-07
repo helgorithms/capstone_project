@@ -149,47 +149,112 @@ The interesting parts of this project are the choices, not the pipeline.
 
 ## Evaluation
 
-**Current status: qualitative, not quantitative.** This is stated plainly because it is the most important open item in the project.
+Evaluation is split into two tiers, so retrieval bugs are isolated from
+generation bugs.
 
-Evaluation to date consists of roughly 30 manually logged queries across three categories:
+**Tier 1 — retrieval reachability.** For each query, checks that the metadata
+filters derived by the parser select a non-empty and *correct* set of chunks.
+Needs no embeddings and no LLM, so it runs in seconds and costs nothing. A named
+speaker must be at least 90% reachable under the filter — presence is not
+enough, since a speaker whose chunks are mostly mislabelled is effectively
+invisible.
 
-- **`expected`** — queries that return correct, well-attributed arguments
-- **`erroneous`** — queries that return an answer that is wrong, misattributed, or hallucinated
-- **`no-info-found`** — queries that should return an answer but return nothing
+**Tier 2 — answer quality.** End-to-end, requires the full pipeline and an API
+key. Currently a set of documented failure cases rather than a scored benchmark.
 
-These logs live in `AdvancedModel_ChatBundestag.ipynb` and drove the design decisions above. They are not a benchmark: there is no gold-standard annotated set, no retrieval metrics, and no measured precision. **Building that harness is roadmap item #1** — without it, "the system got better" is not a claim this project can currently support.
+```bash
+python eval/run_retrieval_eval.py
+```
+
+The suite in `eval/queries.yaml` was built from the manual query logs that drove
+early development. Current status: **16/16 tier-1 cases passing**, up from 14/16
+before the metadata repair described below.
 
 ---
 
 ## Known limitations
 
-Documented from the error logs, with diagnosed causes.
+**1. FAISS post-filters rather than pre-filters**
+LangChain's FAISS integration retrieves first and applies metadata filters
+afterwards. With a narrow filter, most retrieved candidates are discarded and
+results thin out — which is why `fetch_k` is inflated up to 500. This is a
+workaround, not a fix. True filter-then-search requires a vector store that
+supports it natively (Qdrant, Weaviate).
 
-**1. Cabinet / party metadata collision** *(highest impact)*
-Ministers are labelled `party: "Cabinet"` rather than their actual party. A query filtered on `{"party": "CDU/CSU"}` therefore silently excludes Merkel, Altmaier, Scheuer and every other CDU cabinet member. They surface only via role queries (`"Bundeskanzlerin"`) or government-status queries (`"Bundesregierung"`). This accounts for most entries in the no-info-found log.
+**2. Single legislative period**
+Only LP19 (2017–2021) is indexed. Questions about earlier periods return
+nothing, with no indication that the period is simply out of scope.
 
-**2. FAISS post-filters rather than pre-filters**
-LangChain's FAISS integration retrieves first and applies metadata filters afterwards. With a narrow filter, most retrieved candidates are discarded and results thin out — which is why `fetch_k` is inflated up to 500. This is a workaround, not a fix. True filter-then-search requires a vector store that supports it natively (Qdrant, Weaviate).
+**3. Topic vocabulary barrier**
+Retrieval requires the user to know the parliamentary term. Users search for
+*"Atomwaffen"*; the debate says *"Atomwaffenverbotsvertrag"*. They search
+*"Finanzpolitik"*; the debate says *"Finanztransaktionssteuer"*. There is
+currently no path from an everyday policy field to the specific terminology used
+in the chamber.
 
-**3. Single legislative period**
-Only LP19 (2017–2021) is indexed. Questions about earlier periods return nothing, with no indication that the period is simply out of scope.
+**4. Ambiguous or ill-formed queries**
+The system attempts an answer rather than declining. A malformed query can
+return an argument drawn from the wrong speaker.
 
-**4. Topic vocabulary barrier**
-Retrieval requires the user to know the parliamentary term. Users search for *"Atomwaffen"*; the debate says *"Atomwaffenverbotsvertrag"*. They search *"Finanzpolitik"*; the debate says *"Finanztransaktionssteuer"*. There is currently no path from an everyday policy field to the specific terminology used in the chamber.
+**5. No scored answer-quality benchmark**
+Tier 2 is a list of known failures, not a metric. Attribution accuracy and
+faithfulness are not yet measured.
 
-**5. Ambiguous or ill-formed queries**
-The system attempts an answer rather than declining. A malformed query can return an argument drawn from the wrong speaker.
+---
+
+## Fixed: the Cabinet/party collision
+
+The source corpus labels every member of the federal government
+`Party = "Cabinet"` rather than their own party. **19,269 chunks — 8.8% of the
+corpus — were therefore unreachable by any party filter.** A query for
+`{"party": "CDU/CSU"}` returned 0 of Peter Altmaier's 832 chunks, 0 of Julia
+Klöckner's 671, and 3 of Angela Merkel's 2,186. The entire government front
+bench was invisible to exactly the questions users most want to ask.
+
+**Resolution.** Of the 69 affected speakers, 34 also appear elsewhere in the
+corpus as MdB with a real party, so their mapping is derived from the data
+itself with no ambiguity. The remaining 35 are resolved from public record.
+Seven turn out to be *Land* ministers speaking via the Bundesrat rather than
+federal cabinet members; they are tagged `speaker_level="state"` so they can be
+excluded from questions about Bundestag party positions. Every entry records
+its provenance in `party_resolved_by`.
+
+**Applied without re-embedding.** `party` is metadata, not text, so the vectors
+are unaffected. Only the docstore (`index.pkl`) is rewritten; `index.faiss` is
+byte-identical before and after, verified by checksum. An hours-long
+re-embedding job becomes a sub-minute operation, and the retrieval geometry is
+provably unchanged — only what is reachable by filter differs.
+
+| | before | after |
+|---|---:|---:|
+| CDU/CSU chunks reachable | 60,845 | 71,869 |
+| SPD chunks reachable | 40,567 | 48,774 |
+| Altmaier under `party=CDU/CSU` | 0 / 832 | 832 / 832 |
+| Scholz under `party=SPD` | 0 / 1,393 | 1,393 / 1,393 |
+| tier-1 eval | 14/16 | **16/16** |
+
+```bash
+python src/patch_cabinet_metadata.py --dry-run   # inspect
+python src/patch_cabinet_metadata.py             # apply (backs up index.pkl)
+```
 
 ---
 
 ## Roadmap
 
-1. **Evaluation harness** — a gold set of annotated queries with retrieval and attribution metrics, so subsequent changes can be measured rather than asserted
-2. **Fix the Cabinet/party mapping** — resolve ministers to their actual party while retaining government status
-3. **Migrate to Qdrant** — native pre-filtering, and a vector store that scales past a single period
-4. **Expand to all legislative periods** — 1949 to present, via [Open Discourse](https://opendiscourse.de) / CPP-BT rather than re-scraping
-5. **Hybrid retrieval + reranking** — BM25 alongside dense retrieval, with a cross-encoder reranker over the candidate set
-6. **Topic navigation** — a precomputed topic hierarchy (policy field → theme → actual parliamentary terminology) so users can browse in from *"Energiepolitik"* without knowing what to type
+1. ~~Evaluation harness~~ — tier 1 done; tier 2 scoring outstanding
+2. ~~Fix the Cabinet/party mapping~~ — done, see above
+3. **Migrate to Qdrant** — native pre-filtering, and a vector store that scales
+   past a single period
+4. **Expand to all legislative periods** — 1949 to present, via
+   [Open Discourse](https://opendiscourse.de) / CPP-BT rather than re-scraping.
+   Replace the hand-maintained cabinet table with Bundestag Stammdaten (MdB
+   master data), which carries party affiliation for every member.
+5. **Hybrid retrieval + reranking** — BM25 alongside dense retrieval, with a
+   cross-encoder reranker over the candidate set
+6. **Topic navigation** — a precomputed topic hierarchy (policy field → theme →
+   actual parliamentary terminology) so users can browse in from
+   *"Energiepolitik"* without knowing what to type
 
 ---
 
@@ -230,6 +295,11 @@ streamlit run app.py
 
 ```
 app.py                              Streamlit application — full pipeline
+src/query_parser.py                 Question -> (semantic string, metadata filters)
+src/cabinet_party_map.py            Cabinet -> party resolution, with provenance
+src/patch_cabinet_metadata.py       Metadata repair (no re-embedding)
+eval/queries.yaml                   Evaluation suite
+eval/run_retrieval_eval.py          Tier-1 runner: retrieval reachability
 EDA_ChatBundestag.ipynb             Corpus exploration: speech distributions,
                                     speaker roles, length analysis, word clouds
 BasicRAG_ChatBundestag.ipynb        First pipeline: MiniLM, 500-char chunks

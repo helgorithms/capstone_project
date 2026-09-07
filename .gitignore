@@ -18,3 +18,11 @@ env/
 
 # pyenv
 .python-version
+
+# eval artefacts
+eval/results_*.json
+*.pkl.bak
+
+# python
+__pycache__/
+*.py[cod]

@@ -1,0 +1,107 @@
+# ChatBundestag evaluation suite
+#
+# Derived from the manual query logs in AdvancedModel_ChatBundestag.ipynb and
+# turned into a machine-readable regression suite.
+#
+# tier 1 - retrieval reachability. Checks only that the filters parsed from the
+#          query select a non-empty, correct set of chunks. Needs no embeddings
+#          and no LLM, so it runs in seconds and costs nothing.
+# tier 2 - end-to-end answer quality. Requires the full pipeline and an API key.
+#
+# expect_hits:      the query must reach at least this many chunks
+# expect_speakers:  these speakers must be reachable under the parsed filter
+
+cases:
+  # ── Previously returned "no information found" ─────────────────────────
+  # Every one of these targets a member of government. Root cause: party="Cabinet".
+  - id: no_info_01
+    query: "Wie steht die Bundesregierung zur Mietpreisbremse?"
+    tier: 1
+    expect_hits: 1
+  - id: no_info_02
+    query: "Welche Position vertritt Svenja Schulze zum Klimaschutzgesetz?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Svenja Schulze"]
+  - id: no_info_03
+    query: "Welche Position vertritt Svenja Schulze zur CO2-Bepreisung?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Svenja Schulze"]
+  - id: no_info_04
+    query: "Was sind Angela Merkels Argumente für Europäische Integration?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Angela Merkel"]
+  - id: no_info_05
+    query: "Wie steht Angela Merkel zum Thema Maskenpflicht?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Angela Merkel"]
+  - id: no_info_06
+    query: "Welche Position vertritt die Bundesregierung zum Brexit?"
+    tier: 1
+    expect_hits: 1
+  - id: no_info_07
+    query: "Welche Position vertritt Dietmar Bartsch zum Klimaschutzgesetz?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Dietmar Bartsch"]
+
+  # ── Party queries that must now include the front bench ────────────────
+  - id: cabinet_01
+    query: "Wie steht die CDU/CSU zum Klimaschutz?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Angela Merkel", "Peter Altmaier", "Julia Klöckner"]
+  - id: cabinet_02
+    query: "Wie steht die SPD zur Finanzpolitik?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Olaf Scholz", "Heiko Maas"]
+
+  # ── Known-good queries (regression guard: must not break) ──────────────
+  - id: expected_01
+    query: "Welche Position vertritt Gregor Gysi zum Atomwaffenverbotsvertrag?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Gregor Gysi"]
+  - id: expected_02
+    query: "Wie steht die FDP zur Mietpreisbremse?"
+    tier: 1
+    expect_hits: 1
+  - id: expected_03
+    query: "Wie steht die AfD zum Klimaschutzgesetz?"
+    tier: 1
+    expect_hits: 1
+  - id: expected_04
+    query: "Was sind die Argumente der Grünen für das Klimaschutzgesetz?"
+    tier: 1
+    expect_hits: 1
+  - id: expected_05
+    query: "Wie steht die Linke zum Thema Klimaschutz?"
+    tier: 1
+    expect_hits: 1
+  - id: expected_06
+    query: "Welche Position vertritt Claudia Roth zum Klimaschutz?"
+    tier: 1
+    expect_hits: 1
+    expect_speakers: ["Claudia Roth"]
+  - id: expected_07
+    query: "Wie steht die CDU/CSU zum Brexit?"
+    tier: 1
+    expect_hits: 1
+
+  # ── Tier 2: answer quality, needs the full pipeline ────────────────────
+  - id: erroneous_01
+    query: "Wie kritisieren die Grünen die außenpolitischen Ambitionen der Bundesregierung?"
+    tier: 2
+    note: "returned a Grünen speaker but an argument belonging to the AfD example in the prompt"
+  - id: erroneous_02
+    query: "Wie steht der Finanzminister zur Mietpreisbremse?"
+    tier: 2
+    note: "hallucinated a date; identical arguments to the Wirtschaftsminister variant"
+  - id: erroneous_03
+    query: "Welche Argumente werden gegen die Energiewende genannt?"
+    tier: 2
+    note: "returned the same speaker as the 'für die Energiewende' variant"

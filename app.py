@@ -22,24 +22,37 @@ from langchain_core.embeddings import Embeddings
 from langchain_groq import ChatGroq
 from groq import NotFoundError
 import sys
+import importlib.util
 from pathlib import Path
 
-# Import the metadata repair robustly. On Streamlit Community Cloud the app is
-# mounted under /mount/src/<repo>, so a bare "src" package name can be shadowed
-# by the deploy root; and depending on the working directory the package form
-# may not resolve either. Try both, and degrade to a no-op rather than taking
-# the whole app down if neither works.
-try:
-    from src.metadata_repair import repair_docstore
-except Exception:
-    try:
-        sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
-        from metadata_repair import repair_docstore
-    except Exception as _err:
-        print(f"[metadata_repair] unavailable, running unrepaired: {_err}")
 
-        def repair_docstore(_store):
-            return 0
+def _load_local_module(name: str):
+    """Load a module from src/ by absolute file path.
+
+    Import by name is unreliable on Streamlit Community Cloud: the app is
+    mounted under /mount/src/<repo>, so a package called "src" can be shadowed
+    by the deploy root, and the working directory is not guaranteed. Loading the
+    file directly removes sys.path from the equation entirely.
+    """
+    path = Path(__file__).resolve().parent / "src" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"cannot load {name} from {path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+try:
+    repair_docstore = _load_local_module("metadata_repair").repair_docstore
+except Exception as _err:                                   # pragma: no cover
+    print(f"[metadata_repair] unavailable, running unrepaired: {_err!r}")
+
+    def repair_docstore(_store):
+        return 0
+
+
 from pydantic import BaseModel, ValidationError
 from typing import Optional, Literal, List
 

@@ -1,11 +1,38 @@
-streamlit>=1.30.0
-langchain-core>=0.3.0
-langchain-community>=0.3.0
-langchain-huggingface>=0.1.0
-langchain-groq>=0.2.0
-langchain-text-splitters>=0.3.0
-faiss-cpu>=1.7.4
-sentence-transformers>=2.2.0
-pandas>=2.0.0
-pydantic>=2.0.0
-python-dotenv>=1.0.0
+# Pinned deliberately, not with >= ranges.
+#
+# This app is deployed on Streamlit Community Cloud, which rebuilds the
+# environment on every container restart. With open ranges that meant each
+# rebuild pulled whatever was newest: the app was silently moved onto
+# Python 3.14 with new majors of pandas, numpy and transformers, months after
+# the last commit. An app that works in March should still work in September.
+#
+# Deployment target: Python 3.14, linux x86_64.
+# Every version below was resolved against that target and confirmed to have a
+# matching wheel, so the build cannot fall back to a source compile.
+#
+# To refresh deliberately:
+#   pip install --dry-run --python-version 3.14 --only-binary=:all: \
+#     --platform manylinux_2_28_x86_64 --target /tmp/r --report r.json -r requirements.txt
+
+# ── application ──────────────────────────────────────────────
+streamlit==1.63.0
+langchain-core==1.6.2
+langchain-community==0.4.2
+langchain-huggingface==1.2.2
+langchain-groq==1.1.3
+langchain-text-splitters==1.1.2
+faiss-cpu==1.15.0
+sentence-transformers==6.0.1
+pandas==3.0.5
+pydantic==2.13.5
+python-dotenv==1.2.3
+groq==0.37.1
+
+# ── transitive, pinned because they drive the ML stack and move fastest ──
+# (sentence-transformers pulls these; leaving them open is what re-broke the
+#  environment, so they are frozen alongside their parents)
+torch==2.10.0
+transformers==5.16.1
+tokenizers==0.23.2
+huggingface-hub==1.30.0
+numpy==2.5.3

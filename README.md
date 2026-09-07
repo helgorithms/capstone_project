@@ -267,7 +267,13 @@ should a downstream consumer need one.
 
 ## Setup
 
-Requires Python 3.11 and a [Groq API key](https://console.groq.com).
+Requires a [Groq API key](https://console.groq.com).
+
+Dependencies are pinned exactly in `requirements.txt` rather than left as `>=`
+ranges. The deployed app runs on **Python 3.14** (Streamlit Community Cloud's
+current default, which cannot be changed on an existing app), and every pin was
+resolved against that target with a confirmed wheel. Local development on 3.11
+works with the same pins.
 
 ```bash
 pyenv local 3.11.3

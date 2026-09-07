@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Argument mining in German parliamentary debates</strong><br>
-  Ask a question in plain German — get a structured argument with full source attribution.
+  Ask a question in plain German - get a structured argument with full source attribution.
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 Political positions in the Bundestag are public, but effectively unsearchable. The protocols exist as tens of thousands of speeches; finding *what a specific party actually argued about a specific policy* means reading them.
 
-ChatBundestag turns that into a question. It retrieves the relevant speech passages and extracts the **argumentative structure** behind them — not a summary, but a typed object you can verify against the source:
+ChatBundestag turns that into a question. It retrieves the relevant speech passages and extracts the **argumentative structure** behind them - not a summary, but a typed object you can verify against the source:
 
 | Field | Meaning |
 |---|---|
@@ -121,7 +121,7 @@ User query (German, natural language)
 
 | | |
 |---|---|
-| **Source** | [Offene Parlamentsdaten](https://www.bundestag.de/services/opendata) — German Bundestag plenary protocols |
+| **Source** | [Offene Parlamentsdaten](https://www.bundestag.de/services/opendata) German Bundestag plenary protocols |
 | **Scope** | 19th legislative period (2017–2021) |
 | **Volume** | 26,902 speeches → 219,116 text chunks |
 | **Parties** | CDU/CSU, SPD (coalition) · Grüne, Linke, AfD, FDP (opposition) · Cabinet |
@@ -143,7 +143,7 @@ The interesting parts of this project are the choices, not the pipeline.
 | **Filter before search** | Rule-based parser, not LLM-based | Party and speaker names are a closed, known vocabulary. A regex map is deterministic, free and instant; an LLM call here would add latency and a second failure mode. |
 | **Adaptive `fetch_k`** | Scaled by filter narrowness | Narrower filters need a larger candidate pool to survive post-filtering (see [Limitations](#known-limitations)). |
 | **LLM** | Groq, model set by config | Fast enough for interactive use and cheap enough to leave running. The model is configuration rather than a constant: Groq retires hosted models on a rolling basis, and the original choice (`llama-3.1-8b-instant`) was shut down on 2026-08-16. Default is now `openai/gpt-oss-20b`; override with `GROQ_MODEL`. |
-| **Argument model** | Toulmin-derived | `claim` / `grounds` / `rebuttal` / `attack` maps cleanly onto how parliamentary rhetoric is actually structured — a position, its support, a pre-empted objection, and an attack on the other side. |
+| **Argument model** | Toulmin-derived | `claim` / `grounds` / `rebuttal` / `attack` maps cleanly onto how parliamentary rhetoric is actually structured - a position, its support, a pre-empted objection, and an attack on the other side. |
 
 ---
 
@@ -152,14 +152,14 @@ The interesting parts of this project are the choices, not the pipeline.
 Evaluation is split into two tiers, so retrieval bugs are isolated from
 generation bugs.
 
-**Tier 1 — retrieval reachability.** For each query, checks that the metadata
+**Tier 1 - retrieval reachability.** For each query, checks that the metadata
 filters derived by the parser select a non-empty and *correct* set of chunks.
 Needs no embeddings and no LLM, so it runs in seconds and costs nothing. A named
-speaker must be at least 90% reachable under the filter — presence is not
+speaker must be at least 90% reachable under the filter - presence is not
 enough, since a speaker whose chunks are mostly mislabelled is effectively
 invisible.
 
-**Tier 2 — answer quality.** End-to-end, requires the full pipeline and an API
+**Tier 2 - answer quality.** End-to-end, requires the full pipeline and an API
 key. Currently a set of documented failure cases rather than a scored benchmark.
 
 ```bash
@@ -177,7 +177,7 @@ before the metadata repair described below.
 **1. FAISS post-filters rather than pre-filters**
 LangChain's FAISS integration retrieves first and applies metadata filters
 afterwards. With a narrow filter, most retrieved candidates are discarded and
-results thin out — which is why `fetch_k` is inflated up to 500. This is a
+results thin out - which is why `fetch_k` is inflated up to 500. This is a
 workaround, not a fix. True filter-then-search requires a vector store that
 supports it natively (Qdrant, Weaviate).
 
@@ -205,8 +205,8 @@ faithfulness are not yet measured.
 ## Fixed: the Cabinet/party collision
 
 The source corpus labels every member of the federal government
-`Party = "Cabinet"` rather than their own party. **19,269 chunks — 8.8% of the
-corpus — were therefore unreachable by any party filter.** A query for
+`Party = "Cabinet"` rather than their own party. **19,269 chunks - 8.8% of the
+corpus - were therefore unreachable by any party filter.** A query for
 `{"party": "CDU/CSU"}` returned 0 of Peter Altmaier's 832 chunks, 0 of Julia
 Klöckner's 671, and 3 of Angela Merkel's 2,186. The entire government front
 bench was invisible to exactly the questions users most want to ask.
@@ -221,8 +221,8 @@ its provenance in `party_resolved_by`.
 
 **Applied at load time, not baked into the index.** `party` is metadata, not
 text, so the vectors are unaffected and no re-embedding is needed. Rather than
-publishing a corrected index — which would mean pushing 141 MB through Git LFS
-on every change — `app.py` repairs the docstore in memory when the index loads.
+publishing a corrected index - which would mean pushing 141 MB through Git LFS
+on every change - `app.py` repairs the docstore in memory when the index loads.
 The published artefact stays immutable, the repair survives a future migration
 to a different vector store, and the evaluation harness calls the same function,
 so application and evaluation cannot drift apart.
@@ -249,17 +249,17 @@ should a downstream consumer need one.
 
 ## Roadmap
 
-1. ~~Evaluation harness~~ — tier 1 done; tier 2 scoring outstanding
-2. ~~Fix the Cabinet/party mapping~~ — done, see above
-3. **Migrate to Qdrant** — native pre-filtering, and a vector store that scales
+1. ~~Evaluation harness~~ - tier 1 done; tier 2 scoring outstanding
+2. ~~Fix the Cabinet/party mapping~~ - done, see above
+3. **Migrate to Qdrant** - native pre-filtering, and a vector store that scales
    past a single period
-4. **Expand to all legislative periods** — 1949 to present, via
+4. **Expand to all legislative periods** - 1949 to present, via
    [Open Discourse](https://opendiscourse.de) / CPP-BT rather than re-scraping.
    Replace the hand-maintained cabinet table with Bundestag Stammdaten (MdB
    master data), which carries party affiliation for every member.
-5. **Hybrid retrieval + reranking** — BM25 alongside dense retrieval, with a
+5. **Hybrid retrieval + reranking** - BM25 alongside dense retrieval, with a
    cross-encoder reranker over the candidate set
-6. **Topic navigation** — a precomputed topic hierarchy (policy field → theme →
+6. **Topic navigation** - a precomputed topic hierarchy (policy field → theme →
    actual parliamentary terminology) so users can browse in from
    *"Energiepolitik"* without knowing what to type
 
@@ -308,7 +308,7 @@ streamlit run app.py
 ## Repository structure
 
 ```
-app.py                              Streamlit application — full pipeline
+app.py                              Streamlit application - full pipeline
 src/query_parser.py                 Question -> (semantic string, metadata filters)
 src/cabinet_party_map.py            Cabinet -> party resolution, with provenance
 src/metadata_repair.py              In-memory metadata repair (used by app + eval)

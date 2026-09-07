@@ -219,11 +219,13 @@ federal cabinet members; they are tagged `speaker_level="state"` so they can be
 excluded from questions about Bundestag party positions. Every entry records
 its provenance in `party_resolved_by`.
 
-**Applied without re-embedding.** `party` is metadata, not text, so the vectors
-are unaffected. Only the docstore (`index.pkl`) is rewritten; `index.faiss` is
-byte-identical before and after, verified by checksum. An hours-long
-re-embedding job becomes a sub-minute operation, and the retrieval geometry is
-provably unchanged — only what is reachable by filter differs.
+**Applied at load time, not baked into the index.** `party` is metadata, not
+text, so the vectors are unaffected and no re-embedding is needed. Rather than
+publishing a corrected index — which would mean pushing 141 MB through Git LFS
+on every change — `app.py` repairs the docstore in memory when the index loads.
+The published artefact stays immutable, the repair survives a future migration
+to a different vector store, and the evaluation harness calls the same function,
+so application and evaluation cannot drift apart.
 
 | | before | after |
 |---|---:|---:|
@@ -233,10 +235,15 @@ provably unchanged — only what is reachable by filter differs.
 | Scholz under `party=SPD` | 0 / 1,393 | 1,393 / 1,393 |
 | tier-1 eval | 14/16 | **16/16** |
 
+Applied automatically by the app. To see the effect measured:
+
 ```bash
-python src/patch_cabinet_metadata.py --dry-run   # inspect
-python src/patch_cabinet_metadata.py             # apply (backs up index.pkl)
+python eval/run_retrieval_eval.py --no-repair   # 14/16
+python eval/run_retrieval_eval.py               # 16/16
 ```
+
+`src/patch_cabinet_metadata.py` can also write a permanently corrected index,
+should a downstream consumer need one.
 
 ---
 
@@ -297,7 +304,8 @@ streamlit run app.py
 app.py                              Streamlit application — full pipeline
 src/query_parser.py                 Question -> (semantic string, metadata filters)
 src/cabinet_party_map.py            Cabinet -> party resolution, with provenance
-src/patch_cabinet_metadata.py       Metadata repair (no re-embedding)
+src/metadata_repair.py              In-memory metadata repair (used by app + eval)
+src/patch_cabinet_metadata.py       CLI to write a corrected index to disk
 eval/queries.yaml                   Evaluation suite
 eval/run_retrieval_eval.py          Tier-1 runner: retrieval reachability
 EDA_ChatBundestag.ipynb             Corpus exploration: speech distributions,

@@ -20,6 +20,10 @@ from langchain_core.runnables import RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.embeddings import Embeddings
 from langchain_groq import ChatGroq
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+from metadata_repair import repair_docstore
 from pydantic import BaseModel, ValidationError
 from typing import Optional, Literal, List
 
@@ -69,13 +73,23 @@ def load_embedding():
 
 @st.cache_resource
 def load_vectorstore(_embedding):
-    """Load FAISS index (cached across sessions)."""
-    return FAISS.load_local(
+    """Load FAISS index and repair its metadata (cached across sessions).
+
+    The published index labels members of the federal government
+    party="Cabinet", which hides 8.8% of the corpus from party filters. The
+    correction is applied in memory on load rather than shipped as a rewritten
+    index — see src/metadata_repair.py.
+    """
+    store = FAISS.load_local(
         folder_path=VECTOR_DB_PATH,
         embeddings=_embedding,
         allow_dangerous_deserialization=True,
         distance_strategy=DistanceStrategy.COSINE
     )
+    repaired = repair_docstore(store)
+    if repaired:
+        print(f"[metadata_repair] resolved party='Cabinet' on {repaired:,} chunks")
+    return store
 
 
 @st.cache_data

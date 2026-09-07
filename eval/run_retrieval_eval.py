@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import yaml
 from query_parser import parse_query_filters
+from metadata_repair import repair_metadata
 
 DEFAULT_INDEX = ROOT / "vector_databases/vector_db_debates_lp19/index.pkl"
 MIN_COVERAGE = 0.9  # a named speaker must be >=90% reachable under the filter
@@ -37,10 +38,16 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--index", type=Path, default=DEFAULT_INDEX)
     ap.add_argument("--json", type=Path, default=None)
+    ap.add_argument("--no-repair", action="store_true",
+                    help="skip the in-memory metadata repair (baseline)")
     args = ap.parse_args()
 
     docs = load_docs(args.index)
     metas = [d.metadata for d in docs]
+    if args.no_repair:
+        print("metadata repair: DISABLED (baseline)")
+    else:
+        print(f"metadata repair: {repair_metadata(metas):,} chunks resolved")
     # same rule as app.py load_known_speakers(): drop blanks and 1-char names
     known_speakers = {str(m.get("speaker_name","")).strip() for m in metas}
     known_speakers = {n for n in known_speakers if len(n) > 1}

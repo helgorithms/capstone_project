@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 import pandas as pd
 from cabinet_party_map import build_mapping, CABINET_LABEL
+from metadata_repair import repair_metadata
 
 INDEX_PKL = ROOT / "vector_databases/vector_db_debates_lp19/index.pkl"
 CSV = ROOT / "data/debates_lp19.csv"
@@ -46,22 +47,8 @@ def main() -> int:
     docstore, id_map = obj[0], obj[1]
     docs = docstore._dict
 
-    patched, missing = 0, Counter()
-    for doc in docs.values():
-        m = doc.metadata
-        if m.get("party") != CABINET_LABEL:
-            continue
-        name = str(m.get("speaker_name", "")).strip()
-        info = mapping.get(name)
-        if not info:
-            missing[name] += 1
-            continue
-        m["party_original"] = CABINET_LABEL
-        m["party"] = info["party"]
-        m["party_detail"] = info["party_detail"]
-        m["speaker_level"] = info["level"]
-        m["party_resolved_by"] = info["source"]
-        patched += 1
+    patched = repair_metadata((d.metadata for d in docs.values()), mapping)
+    missing = Counter()
 
     print(f"chunks patched: {patched:,}")
     if missing:

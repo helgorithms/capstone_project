@@ -22,8 +22,23 @@ from langchain_core.embeddings import Embeddings
 from langchain_groq import ChatGroq
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
-from metadata_repair import repair_docstore
+
+# Import the metadata repair robustly. On Streamlit Community Cloud the app is
+# mounted under /mount/src/<repo>, so a bare "src" package name can be shadowed
+# by the deploy root; and depending on the working directory the package form
+# may not resolve either. Try both, and degrade to a no-op rather than taking
+# the whole app down if neither works.
+try:
+    from src.metadata_repair import repair_docstore
+except Exception:
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+        from metadata_repair import repair_docstore
+    except Exception as _err:
+        print(f"[metadata_repair] unavailable, running unrepaired: {_err}")
+
+        def repair_docstore(_store):
+            return 0
 from pydantic import BaseModel, ValidationError
 from typing import Optional, Literal, List
 
